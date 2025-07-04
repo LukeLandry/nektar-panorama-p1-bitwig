@@ -80,11 +80,10 @@ public class ControllerBindings {
         transport.playAction().addBinding(hardware.getPlayButton().pressedAction());
         transport.stopAction().addBinding(hardware.getStopButton().pressedAction());
         transport.isPlaying().addValueObserver(hardware.createBooleanValueChangedCallback(0, ControllerHardware.PLAY_BUTTON));
-        transport.recordAction().addBinding(hardware.getStopButton().pressedAction());
         transport.rewindAction().addBinding(hardware.getRewindButton().pressedAction());
         transport.fastForwardAction().addBinding(hardware.getForwardButton().pressedAction());
 
-        transport.isArrangerRecordEnabled().addBinding(hardware.getRecordButton().pressedAction());
+        transport.isArrangerRecordEnabled().toggleAction().addBinding(hardware.getRecordButton().pressedAction());
         transport.isArrangerRecordEnabled().addValueObserver(hardware.createBooleanValueChangedCallback(0, ControllerHardware.RECORD_BUTTON));
         transport.isArrangerLoopEnabled().addBinding(hardware.getLoopButton().pressedAction());
         transport.isArrangerLoopEnabled().addValueObserver(hardware.createBooleanValueChangedCallback(0, ControllerHardware.LOOP_BUTTON));
@@ -111,6 +110,7 @@ public class ControllerBindings {
         host.createAction(() -> cursorRemoteControlsPage.selectedPageIndex().set(3), () -> "set page 3").addBinding(hardware.getActionButton(3).pressedAction());
         host.createAction(state::openRemotePagesMenu, () -> "open remotes menu").addBinding(hardware.getActionButton(4).pressedAction());
 
+        host.createRelativeHardwareControlAdjustmentTarget(state::setSelectedMenuItem).addBinding(hardware.getDataEncoder());
     }
 
     private void refreshHardware(ControllerLayoutMode controllerLayoutMode) {
