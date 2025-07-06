@@ -67,6 +67,10 @@ public class SysexMessages {
         port.sendSysex(getWriteArrayToDisplay(mode.getLayoutValue(), buttonLabels, labels, 1));
     }
 
+//    public void sendMenu(MidiOut port, List<String> menuItems) {
+//        port.sendSysex(getWriteArrayToDisplay("00", menu, menuItems, 1));
+//    }
+
     public String formatSysex(String message) {
         StringBuffer sb = new StringBuffer(message.substring(0, 2));
         for (int i = 2; i < message.length(); i += 2) {
@@ -91,11 +95,6 @@ public class SysexMessages {
 
     private final String sysexPrefix = "F0 00 01 77 7F 01";
     private final String writeMessage = "06";
-    private final String showMenu = "00 08";
-
-
-    private final String belowFaderSection = "06";
-    private final String aboveFaderSection = "07";
 
     private final String headerLine = "01";
     private final String messageLine = "02";
@@ -107,7 +106,7 @@ public class SysexMessages {
     private final String pageTitle = "05";
     private final String controlNames = "06";
     private final String controlValues = "07";
-
+    private final String menu = "08";
 
 
     private final String someSysex = "F0 00 01 77 7F 01 06 02 06 01 00 00 02 00 00 03 00 00 04 00 00 05 00 00 06 00 00 07 00 00 08 00 00 09 01 4D F7";

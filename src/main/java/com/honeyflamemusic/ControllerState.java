@@ -6,6 +6,7 @@ import com.bitwig.extension.controller.api.MidiOut;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,6 +39,11 @@ public class ControllerState {
     private int currentPageIndex = 0;
     private boolean currentPageIndexChanged;
 
+//    private List<String> menuItems = new ArrayList<>();
+//    private int selectedMenuItem = 0;
+//    private boolean menuItemsChanged = false;
+//    private boolean menuShowsRemotePages = false;
+//
     private boolean headerBarChanged;
 
     private List<String> sendNames;
@@ -71,7 +77,7 @@ public class ControllerState {
     }
 
     public void setTrackName(int index, String name) {
-        trackNames.set(index, shortenText(name, 4));
+        trackNames.set(index, fixText(name, 4));
         trackNamesChanged = true;
     }
 
@@ -86,23 +92,23 @@ public class ControllerState {
     }
 
     public void setParameterName(int index, String name) {
-        parameterNames.set(index, shortenText(name, 12));
+        parameterNames.set(index, fixText(name, 12));
         parameterNamesChanged = true;
     }
 
     public void setParameterValues(int index, String value) {
-        parameterValues.set(index, shortenText(value,12));
+        parameterValues.set(index, fixText(value,12));
         parameterValuesChanged = true;
     }
 
     public void setCurrentTrackName(String value) {
-        currentTrackName = shortenText(value, 12);
+        currentTrackName = fixText(value, 12);
         currentTrackNameChanged = true;
         headerBarChanged = true;
     }
 
     public void setCurrentDeviceName(String deviceName) {
-        currentDeviceName = shortenText(deviceName, 12);
+        currentDeviceName = fixText(deviceName, 12);
         currentDeviceNameChanged = true;
         headerBarChanged = true;
     }
@@ -115,14 +121,41 @@ public class ControllerState {
 
     public void setCurrentPageIndex(int pageIndex) {
         this.currentPageIndex = pageIndex;
+//        if (menuShowsRemotePages) {
+//            setSelectedMenuItem(pageIndex);
+//        }
         currentPageIndexChanged = true;
         headerBarChanged = true;
         setActionLight();
     }
 
+    public void setSelectedMenuItem(double d) {
+//        if (menuItems.size() != 0) {
+//            int index = (int)Math.round(d * (double)menuItems.size());
+//        }
+    }
+
+    public void setSelectedMenuItem(int item) {
+//        this.selectedMenuItem = item;
+//        menuItemsChanged = true;
+    }
+
+    private void showMenu(List<String> menuItems) {
+//        this.menuItems.clear();
+//        this.menuItems.addAll(menuItems);
+//        menuItemsChanged = true;
+//        menuShowsRemotePages = false;
+    }
+
+    public void closeMenu() {
+//        this.menuItems.clear();
+//        menuItemsChanged = true;
+//        menuShowsRemotePages = false;
+    }
 
     public void openRemotePagesMenu() {
-        // TODO show additional pages
+//        showMenu(remotePageNames);
+//        menuShowsRemotePages = true;
     }
 
 
@@ -179,7 +212,7 @@ public class ControllerState {
                 List<String> buttonLabels = initializeToEmpty(5);
                 if (remotePageNames != null && !remotePageNames.isEmpty()) {
                     for (int i = 0; i < remotePageNames.size() && i < 4; i++) {
-                        buttonLabels.set(i, shortenText(remotePageNames.get(i), 8));
+                        buttonLabels.set(i, fixText(remotePageNames.get(i), 8));
                     }
                     buttonLabels.set(4, remotePageNames.size() > 4 ? "More" : "");
                 }
@@ -188,6 +221,11 @@ public class ControllerState {
                 remotePageNamesChanged = false;
 
             }
+
+//            if (layoutChanged || menuItemsChanged) {
+//                sysexMessages.sendMenu(midiOut, menuItems);
+//                host.scheduleTask(this::updateSelectedMenuItem, 50);
+//            }
 
             if (layoutChanged) {
                 // TODO put something relevant here
@@ -213,12 +251,16 @@ public class ControllerState {
         return l;
     }
 
-    private String shortenText(String fullText, int maxLength) {
-        if (fullText.length() <= maxLength) {
-            return fullText;
+    private String fixText(String fullText, int maxLength) {
+
+        String text = new String(fullText.getBytes(StandardCharsets.US_ASCII), StandardCharsets.US_ASCII);
+        host.println("converted to ascii maybe? - " + text);
+
+        if (text.length() <= maxLength) {
+            return text;
         }
 
-        String text = fullText.replaceAll("\\s+", "");
+        text.replaceAll("\\s+", "");
         if (text.length() <= maxLength) {
             return text;
         }
@@ -236,6 +278,10 @@ public class ControllerState {
             midiOut.sendMidi(ShortMidiMessage.CONTROL_CHANGE, ControllerHardware.ACTION_BUTTON + i, i == currentPageIndex ? 127 : 0);
         }
     }
+
+//    public void updateSelectedMenuItem() {
+//        midiOut.sendMidi(ShortMidiMessage.CONTROL_CHANGE, ControllerHardware.DATA_ENCODER, selectedMenuItem);
+//    }
 
 
 }
